@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # import pydot_ng as pydot
 import networkx as nx
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -19,9 +20,7 @@ class BayesNode:
         # E.g. set((A, True), (B, 9)) -> {1: 0.2, 2: 0.7, 3: 0.1}
         self.parents = []
         self.conditional_distribution = {}
-        
         self.marginal_distribution = {}
-        
         self.domain = set()
         
     # Defines the marginal distribution for a node, so there's no conditioning allowed. Explicitly
@@ -59,6 +58,20 @@ class BayesNode:
         # Turn the parent assignments into a set.
         conditioning_event = frozenset(parent_vals)
         return self.conditional_distribution.get(conditioning_event).get(val)
+    
+    def draw_sample(self, parent_vals=None):
+        if parent_vals is None:
+            assert not self.parents, "Cannot ask for a sample without giving parent values"
+        relevant_distribution = None
+        if not self.parents:
+            relevant_distribution = self.marginal_distribution
+        else:  # Same idea as for marginal, but with the conditional distribution.
+            conditioning_event = frozenset(parent_vals)
+            relevant_distribution = self.conditional_distribution.get(conditioning_event)
+        relevant_values = [entry[0] for entry in sorted(relevant_distribution.items())]
+        relevant_probabilities = [entry[1] for entry in sorted(relevant_distribution.items())]            
+        return np.random.choice(relevant_values, p=relevant_probabilities)
+        
         
 
 """
@@ -99,6 +112,21 @@ class BayesNet:
             fetched_prob = var.get_prob_value(value, parent_assignments)
             running_prob = running_prob * fetched_prob
         return running_prob
+    
+    def get_topographical_ordering(self):
+        ordered = []
+        while len(ordered) < len(self.nodes):
+            for node in self.nodes:
+                if node in ordered:
+                    continue
+                parents_already_added = True
+                for parent in node.parents:
+                    if parent not in ordered:
+                        parents_already_added = False
+                        break
+                if parents_already_added:
+                    ordered.append(node)
+        return ordered
 
     def draw_net(self):
         nxg = nx.DiGraph()
