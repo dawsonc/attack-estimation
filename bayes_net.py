@@ -85,6 +85,13 @@ class BayesNet:
         self.name_to_nodes = {}
         for node in nodes:
             self.name_to_nodes[node.name] = node
+        # Helper map goes from a node to its children
+        self.node_to_children = {}
+        for node in nodes:
+            self.node_to_children[node] = []  # Initialize empty
+        for node in nodes:
+            for parent_node in node.parents:
+                self.node_to_children[parent_node].append(node)
 
         # This would also be a great place to do sanity checks on the distributions themselves fully specifying
         # the distributions and summing to 1.
@@ -127,6 +134,9 @@ class BayesNet:
                 if parents_already_added:
                     ordered.append(node)
         return ordered
+    
+    def get_children(self, node):
+        return self.node_to_children.get(node)
 
     def draw_net(self):
         nxg = nx.DiGraph()
