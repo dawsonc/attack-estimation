@@ -71,6 +71,9 @@ class BayesNode:
         relevant_values = [entry[0] for entry in sorted(relevant_distribution.items())]
         relevant_probabilities = [entry[1] for entry in sorted(relevant_distribution.items())]            
         return np.random.choice(relevant_values, p=relevant_probabilities)
+    
+    def __str__(self):
+        return self.name
         
         
 
