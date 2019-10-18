@@ -65,3 +65,35 @@ def elim_map(BN, A, ordering, e):
 
 
     pass
+
+def elim-bel
+    """Maximal belief associated with a subset of unobserved hypothesis variable
+   Inputs: 
+      BN : a belief network BN = {P_1, ..., P_n}
+      ordering: ordering of the variables where those in A are first in the ordering 
+      e : observations
+   Output: Belief P(x_1|e)
+
+   """
+   #Initialize# 
+   bucket_indices= ordering
+   bucket = dict()
+   for b in bucket_indices: 
+      bucket[b]=list() 
+      for s in BN: 
+         if b in s and s not already used: 
+            bucket[b].append(s) 
+   #Backwards# 
+   for p = 1:n : 
+       for b in bucket[p]: 
+           if bucket[p] contains X_p=x_p:
+              assign X_p = x_p for b
+           else: 
+              U_p = Union (S_i - {X_p})
+              b = sum(product B[i])
+              B_p to the bucket of the largest-index variable in Up 
+
+   return alpha*product(sum(b_i(x_i))) # where the b_i are in bucket_1, alpha is a normalizing constant 
+ 
+
+    pass
