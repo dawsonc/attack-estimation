@@ -1,3 +1,67 @@
-#Bucket Elimination 
+#Bucket Elimination MAP 
 # (demonstrate speedup)
 # Good and bad ordering
+
+rain_node = BayesNode('Rain')
+rain_node.set_marginal_distribution({True: 0.2, False: 0.8})
+sprinklers_node = BayesNode('Sprinklers')
+sprinklers_node.set_marginal_distribution({'on': 0.6, 'off': 0.4})
+grass_node = BayesNode('Grass')
+grass_node.add_entry([(rain_node, True), (sprinklers_node, 'on')], {'wet': 0.95, 'dry': 0.05})
+grass_node.add_entry([(rain_node, True), (sprinklers_node, 'off')], {'wet': 0.6, 'dry': 0.4})
+grass_node.add_entry([(rain_node, False), (sprinklers_node, 'on')], {'wet': 0.45, 'dry': 0.55})
+grass_node.add_entry([(rain_node, False), (sprinklers_node, 'off')], {'wet': 0.1, 'dry': 0.90})
+feet_node = BayesNode('Feet')
+feet_node.add_entry([(grass_node, 'wet')], {'dry': 0.1, 'damp': 0.5, 'drenched': 0.4})
+feet_node.add_entry([(grass_node, 'dry')], {'dry': 0.7, 'damp': 0.2, 'drenched': 0.1})
+
+# Second, create a BayesNet object that just stores all the nodes.
+net = BayesNet([rain_node, sprinklers_node, grass_node, feet_node])
+
+ordering = net.get_topographical_ordering() 
+e = evidence
+
+def elim_map(BN, A, ordering, e):
+    """Maximal belief associated with a subset of unobserved hypothesis variable
+   Inputs: 
+      BN : a belief network BN = {P_1, ..., P_n}
+      A : set of variables 
+      ordering: ordering of the variables where those in A are first in the ordering 
+      e : observations
+   Output: MAP assignment A = a
+
+   """
+   #Initialize# 
+   bucket_indices= ordering
+   bucket = dict()
+   for b in bucket_indices: 
+      bucket[b]=list() 
+      for s in BN: 
+         if b in s and s not already used: 
+            bucket[b].append(s) 
+   #Backwards# 
+   for p = 1:n : 
+       for b in bucket[p]: 
+           if bucket[p] contains X_p=x_p:
+              assign X_p = x_p for b
+           else: 
+              U_p = Union (S_i - {X_p})
+              if X_p is not in A:
+                 b = sum(product B[i])
+              else: 
+                b = max (product B_i)
+                a_o = argmax Xp B[p]
+                Add B_p to the bucket of the largest-index variable in Up 
+
+    #Forward#
+    for i in ordering:
+        Assign values to A  
+
+
+   return A 
+   
+   for p = 1:n
+      
+
+
+    pass
