@@ -3,6 +3,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+# import pydot  # Install graphviz in anaconda prompt!!!
 
 
 def almost_equal(val1, val2, epsilon=0.0001):
@@ -123,7 +124,7 @@ class BayesNet:
             running_prob = running_prob * fetched_prob
         return running_prob
     
-    def get_topographical_ordering(self):
+    def get_topological_ordering(self):
         ordered = []
         while len(ordered) < len(self.nodes):
             for node in self.nodes:
@@ -142,6 +143,7 @@ class BayesNet:
         return self.node_to_children.get(node)
 
     def draw_net(self):
+        # Use graphviz layout and dot.
         nxg = nx.DiGraph()
         edges = []
         for node in self.nodes:
@@ -158,6 +160,7 @@ class BayesNet:
         # Define some layout. Clearly, I could do something way better that would force the parents up top, but
         # I haven't spent time on that yet.
         pos = nx.spring_layout(nxg)
+#         pos = nx.nx_pydot.graphviz_layout(nxg, prog='dot')
         nx.draw_networkx_nodes(nxg, pos, node_color='r')
         nx.draw_networkx_edges(nxg, pos, edges)
         nx.draw_networkx_labels(nxg, pos, node_labels, font_size=16)
