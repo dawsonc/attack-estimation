@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# import pydot_ng as pydot
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import pydot  # Install graphviz in anaconda prompt!!!
+
 
 
 def almost_equal(val1, val2, epsilon=0.0001):
@@ -39,7 +40,7 @@ class BayesNode:
         assert almost_equal(sum(distribution.values()), 1), "Improper distribution passed in " + str(distribution)
         # Convert the parent vals into a set because order doesn't matter; use frozenset to make hashable.
         conditioning_event = frozenset(parent_vals)
-        assert conditioning_event not in self.conditional_distribution.keys(), "Already have event for " + conditioning_event
+        assert conditioning_event not in self.conditional_distribution.keys(), "Already have event for " + str(conditioning_event)
         if self.domain:
             assert distribution.keys() == self.domain, "Mismatched domains."
         else:  # Haven't set domain yet, so do so now.
@@ -123,7 +124,7 @@ class BayesNet:
             running_prob = running_prob * fetched_prob
         return running_prob
     
-    def get_topographical_ordering(self):
+    def get_topological_ordering(self):
         ordered = []
         while len(ordered) < len(self.nodes):
             for node in self.nodes:
@@ -142,23 +143,22 @@ class BayesNet:
         return self.node_to_children.get(node)
 
     def draw_net(self):
+        # Use graphviz layout and dot.
         nxg = nx.DiGraph()
         edges = []
         for node in self.nodes:
             if node.parents:
                 edges.extend([(parent, node) for parent in node.parents])
         nxg.add_edges_from(edges)
-        print("Have", nxg.number_of_nodes(), "nodes and", nxg.number_of_edges(), "edges")
         
         # Define the node labels
         node_labels = {}
         for node in self.nodes:
             node_labels[node] = node.name
         
-        # Define some layout. Clearly, I could do something way better that would force the parents up top, but
-        # I haven't spent time on that yet.
-        pos = nx.spring_layout(nxg)
-        nx.draw_networkx_nodes(nxg, pos, node_color='r')
+        # Define some layout.
+        pos = nx.nx_pydot.graphviz_layout(nxg, prog='dot')
+        nx.draw_networkx_nodes(nxg, pos)
         nx.draw_networkx_edges(nxg, pos, edges)
         nx.draw_networkx_labels(nxg, pos, node_labels, font_size=16)
         plt.axis('off')
